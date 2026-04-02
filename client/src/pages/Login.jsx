@@ -14,9 +14,9 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(form);
+      const res = await login(form);
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      navigate(`/${res.user.role}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally { setLoading(false); }

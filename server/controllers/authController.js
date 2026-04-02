@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Session from '../models/Session.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import {
@@ -13,20 +14,23 @@ import { sendEmail } from '../config/email.js';
 // POST /api/auth/register
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, roles } = req.validatedBody;
+    const { name, email, password, role } = req.validatedBody;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already registered' });
     }
 
-    const user = await User.create({ name, email, password, roles });
+    const user = await User.create({ name, email, password, role });
 
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
-    user.refreshToken = refreshToken;
-    await user.save();
+    await Session.create({
+      userId: user._id,
+      refreshToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
 
     setTokenCookies(res, accessToken, refreshToken);
 
@@ -36,7 +40,7 @@ export const register = async (req, res, next) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        roles: user.roles,
+        role: user.role,
         avatar: user.avatar,
       },
       accessToken,
@@ -68,8 +72,11 @@ export const login = async (req, res, next) => {
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
-    user.refreshToken = refreshToken;
-    await user.save();
+    await Session.create({
+      userId: user._id,
+      refreshToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
 
     setTokenCookies(res, accessToken, refreshToken);
 
@@ -79,7 +86,7 @@ export const login = async (req, res, next) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        roles: user.roles,
+        role: user.role,
         avatar: user.avatar,
       },
       accessToken,
@@ -96,7 +103,7 @@ export const logout = async (req, res, next) => {
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-        await User.findByIdAndUpdate(decoded.userId, { refreshToken: null });
+        await Session.deleteOne({ refreshToken: token });
       } catch (e) {
         // Token invalid, still clear cookies
       }
@@ -118,17 +125,23 @@ export const refresh = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const session = await Session.findOne({ refreshToken: token });
+    if (!session || session.expiresAt < new Date()) {
+      return res.status(401).json({ message: 'Invalid or expired refresh token' });
+    }
+
     const user = await User.findById(decoded.userId);
 
-    if (!user || user.refreshToken !== token) {
+    if (!user) {
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
-    user.refreshToken = refreshToken;
-    await user.save();
+    session.refreshToken = refreshToken;
+    session.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await session.save();
 
     setTokenCookies(res, accessToken, refreshToken);
 
@@ -195,7 +208,7 @@ export const resetPassword = async (req, res, next) => {
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
-    user.refreshToken = undefined;
+    await Session.deleteMany({ userId: user._id });
     await user.save();
 
     res.json({ message: 'Password reset successful. Please login again.' });

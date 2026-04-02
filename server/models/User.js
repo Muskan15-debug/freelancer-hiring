@@ -27,11 +27,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  roles: [{
+  role: {
     type: String,
     enum: ['admin', 'recruiter', 'projectManager', 'freelancer', 'agency'],
     default: 'freelancer',
-  }],
+  },
   title: {
     type: String,
     trim: true,
@@ -123,7 +123,7 @@ userSchema.methods.toJSON = function() {
 
 // Indexes
 userSchema.index({ skills: 1 });
-userSchema.index({ roles: 1 });
+userSchema.index({ role: 1 });
 userSchema.index({ 'rating.average': -1 });
 userSchema.index({ availability: 1 });
 

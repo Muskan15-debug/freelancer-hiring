@@ -5,8 +5,50 @@ import {
   HiOutlineChatAlt2, HiOutlineExclamationCircle, HiOutlineCreditCard,
   HiOutlineUser, HiOutlineUserGroup, HiOutlineSearch,
   HiOutlineChartBar, HiOutlineUsers, HiOutlineOfficeBuilding,
-  HiOutlineLogout
+  HiOutlineLogout, HiOutlineViewBoards, HiOutlineCash,
+  HiOutlineClipboardList
 } from 'react-icons/hi';
+
+const ROLES_MENU = {
+  admin: [
+    { section: 'Admin Metrics' },
+    { to: '/admin', icon: HiOutlineChartBar, label: 'Overview' },
+    { to: '/admin/users', icon: HiOutlineUsers, label: 'User Management' },
+    { to: '/admin/agencies', icon: HiOutlineOfficeBuilding, label: 'Agency Approvals' },
+    { to: '/admin/disputes', icon: HiOutlineExclamationCircle, label: 'Disputes' },
+    { to: '/admin/analytics', icon: HiOutlineChartBar, label: 'Platform Analytics' }
+  ],
+  recruiter: [
+    { section: 'Recruitment' },
+    { to: '/recruiter', icon: HiOutlineSearch, label: 'Talent Discovery' },
+    { to: '/recruiter/shortlist', icon: HiOutlineClipboardList, label: 'Shortlist' },
+    { to: '/recruiter/invites', icon: HiOutlineChatAlt2, label: 'Invites & Messages' },
+    { to: '/recruiter/pipeline', icon: HiOutlineViewBoards, label: 'Hiring Pipeline' }
+  ],
+  projectManager: [
+    { section: 'Project Management' },
+    { to: '/pm', icon: HiOutlineHome, label: 'Dashboard' },
+    { to: '/pm/projects', icon: HiOutlineBriefcase, label: 'Project Switcher' },
+    { to: '/pm/milestones', icon: HiOutlineDocumentText, label: 'Milestones' },
+    { to: '/pm/team', icon: HiOutlineUserGroup, label: 'Team View' }
+  ],
+  freelancer: [
+    { section: 'Freelance Work' },
+    { to: '/freelancer', icon: HiOutlineClipboardList, label: 'My Tasks' },
+    { to: '/freelancer/projects', icon: HiOutlineBriefcase, label: 'Active Projects' },
+    { to: '/freelancer/invites', icon: HiOutlineChatAlt2, label: 'Invites Inbox' },
+    { to: '/freelancer/earnings', icon: HiOutlineCash, label: 'Earnings' },
+    { section: 'Settings' },
+    { to: '/freelancer/profile', icon: HiOutlineUser, label: 'Profile' }
+  ],
+  agency: [
+    { section: 'Agency Management' },
+    { to: '/agency', icon: HiOutlineOfficeBuilding, label: 'Agency Profile' },
+    { to: '/agency/team', icon: HiOutlineUserGroup, label: 'Team Management' },
+    { to: '/agency/projects', icon: HiOutlineBriefcase, label: 'Projects & Tasks' },
+    { to: '/agency/earnings', icon: HiOutlineCash, label: 'Earnings & Payouts' }
+  ]
+};
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -17,67 +59,30 @@ const Sidebar = () => {
     navigate('/login');
   };
 
-  const isAdmin = user?.roles?.includes('admin');
-
-  const navItems = [
-    { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
-    { to: '/projects', icon: HiOutlineBriefcase, label: 'Projects' },
-    { to: '/contracts', icon: HiOutlineDocumentText, label: 'Contracts' },
-    { to: '/messages', icon: HiOutlineChatAlt2, label: 'Messages' },
-    { to: '/disputes', icon: HiOutlineExclamationCircle, label: 'Disputes' },
-    { to: '/payments', icon: HiOutlineCreditCard, label: 'Payments' },
-  ];
-
-  const discoverItems = [
-    { to: '/talent', icon: HiOutlineSearch, label: 'Find Talent' },
-    { to: '/agency', icon: HiOutlineOfficeBuilding, label: 'Agency' },
-  ];
-
-  const adminItems = [
-    { to: '/admin', icon: HiOutlineChartBar, label: 'Analytics' },
-    { to: '/admin/users', icon: HiOutlineUsers, label: 'Users' },
-    { to: '/admin/agencies', icon: HiOutlineOfficeBuilding, label: 'Agencies' },
-    { to: '/admin/disputes', icon: HiOutlineExclamationCircle, label: 'Disputes' },
-  ];
+  const navItems = user?.role ? ROLES_MENU[user.role] : [];
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
         <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-          <rect width="28" height="28" rx="8" fill="#14b8a6"/>
+          <rect width="28" height="28" rx="8" fill="#0D9488"/>
           <path d="M8 20V8h4.5c2.5 0 4 1.5 4 3.5S15 15 12.5 15H11v5H8zm3-7.5h1.3c.9 0 1.2-.5 1.2-1.2 0-.7-.3-1.3-1.2-1.3H11v2.5z" fill="white"/>
         </svg>
         FreelanceHub
       </div>
 
       <nav className="sidebar-nav">
-        <div className="sidebar-section">Main</div>
-        {navItems.map(item => (
-          <NavLink key={item.to} to={item.to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-            <item.icon size={20} />
-            {item.label}
-          </NavLink>
-        ))}
-
-        <div className="sidebar-section">Discover</div>
-        {discoverItems.map(item => (
-          <NavLink key={item.to} to={item.to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-            <item.icon size={20} />
-            {item.label}
-          </NavLink>
-        ))}
-
-        {isAdmin && (
-          <>
-            <div className="sidebar-section">Admin</div>
-            {adminItems.map(item => (
-              <NavLink key={item.to} to={item.to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                <item.icon size={20} />
-                {item.label}
-              </NavLink>
-            ))}
-          </>
-        )}
+        {navItems.map((item, idx) => {
+          if (item.section) {
+            return <div key={idx} className="sidebar-section">{item.section}</div>;
+          }
+          return (
+            <NavLink key={item.to} to={item.to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} end>
+              <item.icon size={20} />
+              {item.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <div className="sidebar-user">
@@ -86,7 +91,7 @@ const Sidebar = () => {
         </div>
         <div className="sidebar-user-info">
           <div className="sidebar-user-name">{user?.name}</div>
-          <div className="sidebar-user-role">{user?.roles?.[0]}</div>
+          <div className="sidebar-user-role" style={{textTransform: 'capitalize'}}>{user?.role}</div>
         </div>
         <button className="btn btn-ghost btn-icon" onClick={handleLogout} title="Logout" style={{ marginLeft: 'auto', color: 'var(--gray-400)' }}>
           <HiOutlineLogout size={18} />

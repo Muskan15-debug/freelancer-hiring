@@ -11,27 +11,27 @@ const ROLES = [
 ];
 
 const Register = () => {
-  const [form, setForm] = useState({ name: '', email: '', password: '', roles: ['freelancer'] });
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'freelancer' });
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
 
-  const toggleRole = (role) => {
+  const selectRole = (role) => {
     setForm(prev => ({
       ...prev,
-      roles: prev.roles.includes(role) ? prev.roles.filter(r => r !== role) : [...prev.roles, role],
+      role: role,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.roles.length === 0) return toast.error('Select at least one role');
+    if (!form.role) return toast.error('Select a role');
     setLoading(true);
     try {
       await register(form);
       toast.success('Account created! Welcome aboard.');
-      navigate('/dashboard');
+      navigate(`/${form.role}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
     } finally { setLoading(false); }
@@ -65,7 +65,7 @@ const Register = () => {
             <label className="form-label">I want to...</label>
             <div className="role-picker">
               {ROLES.map(r => (
-                <button key={r.value} type="button" className={`role-option ${form.roles.includes(r.value) ? 'selected' : ''}`} onClick={() => toggleRole(r.value)}>
+                <button key={r.value} type="button" className={`role-option ${form.role === r.value ? 'selected' : ''}`} onClick={() => selectRole(r.value)}>
                   {r.label}
                 </button>
               ))}
