@@ -18,6 +18,11 @@ export const usersAPI = {
   markNotificationsRead: () => api.put('/users/me/notifications/read'),
 };
 
+export const shortlistAPI = {
+  toggle: (data) => api.post('/shortlists', data),
+  getAll: () => api.get('/shortlists'),
+};
+
 export const projectsAPI = {
   create: (data) => api.post('/projects', data),
   createWithFiles: (formData) => api.post('/projects', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
