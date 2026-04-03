@@ -3,11 +3,11 @@ import User from '../models/User.js';
 // GET /api/users — talent search
 export const searchUsers = async (req, res, next) => {
   try {
-    const { role, skills, rating, availability, search, page = 1, limit = 12 } = req.query;
+    const { role, skills, rating, availability, search, minRate, maxRate, page = 1, limit = 12 } = req.query;
 
     const filter = { isBanned: false };
 
-    if (role) filter.roles = role;
+    if (role) filter.role = role;
     if (availability) filter.availability = availability;
     if (rating) filter['rating.average'] = { $gte: parseFloat(rating) };
     if (skills) {
@@ -22,10 +22,13 @@ export const searchUsers = async (req, res, next) => {
       ];
     }
 
+    if (minRate) filter.hourlyRate = { ...filter.hourlyRate, $gte: parseFloat(minRate) };
+    if (maxRate) filter.hourlyRate = { ...filter.hourlyRate, $lte: parseFloat(maxRate) };
+
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const total = await User.countDocuments(filter);
     const users = await User.find(filter)
-      .select('name email avatar title skills hourlyRate availability location rating roles')
+      .select('name email avatar title skills hourlyRate availability location rating role bio')
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ 'rating.average': -1 });

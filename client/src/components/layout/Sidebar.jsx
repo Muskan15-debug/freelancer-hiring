@@ -46,6 +46,7 @@ const ROLES_MENU = {
     { to: '/agency', icon: HiOutlineOfficeBuilding, label: 'Agency Profile' },
     { to: '/agency/team', icon: HiOutlineUserGroup, label: 'Team Management' },
     { to: '/agency/projects', icon: HiOutlineBriefcase, label: 'Projects & Tasks' },
+    { to: '/agency/invites', icon: HiOutlineChatAlt2, label: 'Invites Inbox' },
     { to: '/agency/earnings', icon: HiOutlineCash, label: 'Earnings & Payouts' }
   ]
 };

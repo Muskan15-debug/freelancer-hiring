@@ -24,6 +24,9 @@ import Payments from './pages/Payments.jsx';
 import Profile from './pages/Profile.jsx';
 import TalentSearch from './pages/TalentSearch.jsx';
 import AgencyManagement from './pages/AgencyManagement.jsx';
+import RecruiterDashboard from './pages/RecruiterDashboard.jsx';
+import FreelancerInvites from './pages/FreelancerInvites.jsx';
+import AgencyInvites from './pages/AgencyInvites.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import AdminUsers from './pages/AdminUsers.jsx';
 import AdminAgencies from './pages/AdminAgencies.jsx';
@@ -70,10 +73,10 @@ function App() {
               {/* Recruiter Protected routes */}
               <Route element={<ProtectedRoute allowedRoles={['recruiter']} />}>
                 <Route element={<DashboardLayout />}>
-                  <Route path="/recruiter" element={<Placeholder title="Talent Discovery" />} />
-                  <Route path="/recruiter/shortlist" element={<Placeholder title="Shortlist" />} />
-                  <Route path="/recruiter/invites" element={<Placeholder title="Invites & Messages" />} />
-                  <Route path="/recruiter/pipeline" element={<Placeholder title="Hiring Pipeline View" />} />
+                  <Route path="/recruiter" element={<TalentSearch />} />
+                  <Route path="/recruiter/shortlist" element={<RecruiterDashboard initialTab={0} />} />
+                  <Route path="/recruiter/invites" element={<RecruiterDashboard initialTab={1} />} />
+                  <Route path="/recruiter/pipeline" element={<RecruiterDashboard />} />
                 </Route>
               </Route>
 
@@ -92,7 +95,7 @@ function App() {
                 <Route element={<DashboardLayout />}>
                   <Route path="/freelancer" element={<Dashboard />} />
                   <Route path="/freelancer/projects" element={<Projects />} />
-                  <Route path="/freelancer/invites" element={<Placeholder title="Invites Inbox" />} />
+                  <Route path="/freelancer/invites" element={<FreelancerInvites />} />
                   <Route path="/freelancer/earnings" element={<Payments />} />
                   <Route path="/freelancer/profile" element={<Profile />} />
                 </Route>
@@ -104,6 +107,7 @@ function App() {
                   <Route path="/agency" element={<AgencyManagement />} />
                   <Route path="/agency/team" element={<Placeholder title="Team Management" />} />
                   <Route path="/agency/projects" element={<Placeholder title="Project View" />} />
+                  <Route path="/agency/invites" element={<AgencyInvites />} />
                   <Route path="/agency/earnings" element={<Placeholder title="Earnings & Payouts" />} />
                 </Route>
               </Route>

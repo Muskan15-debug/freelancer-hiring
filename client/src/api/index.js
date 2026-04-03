@@ -97,3 +97,13 @@ export const adminAPI = {
   getAnalytics: (type) => api.get('/admin/analytics', { params: { type } }),
   getDisputes: () => api.get('/admin/disputes'),
 };
+
+export const invitesAPI = {
+  send: (data) => api.post('/invites', data),
+  getAll: () => api.get('/invites'),
+  respond: (id, status) => api.patch(`/invites/${id}/respond`, { status }),
+  assignPM: (id, pmId) => api.patch(`/invites/${id}/assign-pm`, { pmId }),
+  getMessages: (id) => api.get(`/invites/${id}/messages`),
+  sendMessage: (id, content) => api.post(`/invites/${id}/messages`, { content }),
+};
+

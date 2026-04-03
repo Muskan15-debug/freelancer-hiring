@@ -4,7 +4,7 @@ export const requireRole = (...roles) => {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const hasRole = roles.some(role => req.user.roles.includes(role));
+    const hasRole = roles.includes(req.user.role);
     if (!hasRole) {
       return res.status(403).json({
         message: `Access denied. Required role: ${roles.join(' or ')}`,
@@ -21,7 +21,7 @@ export const requireAnyRole = (roles) => {
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const hasRole = roles.some(role => req.user.roles.includes(role));
+    const hasRole = roles.includes(req.user.role);
     if (!hasRole) {
       return res.status(403).json({
         message: `Access denied. Required one of: ${roles.join(', ')}`,

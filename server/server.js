@@ -25,6 +25,8 @@ import disputeRoutes from './routes/disputes.js';
 import paymentRoutes from './routes/payments.js';
 import agencyRoutes from './routes/agencies.js';
 import adminRoutes from './routes/admin.js';
+import inviteRoutes from './routes/invites.js';
+import shortlistRoutes from './routes/shortlists.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -75,6 +77,8 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/agencies', agencyRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/invites', inviteRoutes);
+app.use('/api/shortlists', shortlistRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

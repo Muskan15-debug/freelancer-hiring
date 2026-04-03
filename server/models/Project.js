@@ -56,6 +56,14 @@ const projectSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  inviteId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Invite',
+  },
+  handedOff: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 });
