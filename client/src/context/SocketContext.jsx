@@ -1,15 +1,18 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { useAuth } from './AuthContext.jsx';
+import { useAuth } from './useAuth.js';
 
-const SocketContext = createContext(null);
+export const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) { setSocket(null); return; }
+    if (!user) {
+      setSocket(null);
+      return;
+    }
 
     const newSocket = io('/', {
       auth: { token: document.cookie.split('accessToken=')[1]?.split(';')[0] || '' },
@@ -29,5 +32,3 @@ export const SocketProvider = ({ children }) => {
     </SocketContext.Provider>
   );
 };
-
-export const useSocket = () => useContext(SocketContext);
