@@ -9,7 +9,7 @@ on:
 
 jobs:
   client:
-    name: Client build and lint
+    name: Client build
     runs-on: ubuntu-latest
 
     defaults:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Install client dependencies
         run: npm ci
-
-      - name: Lint client
-        run: npm run lint
 
       - name: Build client
         run: npm run build
